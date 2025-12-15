@@ -1,0 +1,120 @@
+package com.skyfirst.library_borrowing.service.impl;
+
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.skyfirst.library_borrowing.common.PageData;
+import com.skyfirst.library_borrowing.common.PageResponse;
+import com.skyfirst.library_borrowing.common.context.BaseContext;
+import com.skyfirst.library_borrowing.dto.ReviewCreateDTO;
+import com.skyfirst.library_borrowing.entity.Review;
+import com.skyfirst.library_borrowing.entity.User;
+import com.skyfirst.library_borrowing.exception.BusinessException;
+import com.skyfirst.library_borrowing.mapper.ReviewMapper;
+import com.skyfirst.library_borrowing.mapper.UserMapper;
+import com.skyfirst.library_borrowing.service.IReviewService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.skyfirst.library_borrowing.vo.BookDetailVO;
+import com.skyfirst.library_borrowing.vo.ReviewVO;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+/**
+ * <p>
+ * 评价表 服务实现类
+ * </p>
+ *
+ * @author starnighter
+ * @since 2025-11-08
+ */
+@Service
+public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> implements IReviewService {
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @Override
+    @Transactional
+    public ReviewVO createReview(ReviewCreateDTO dto) {
+        Long currentUserId = BaseContext.getCurrentId();
+        Review review = new Review();
+        BeanUtils.copyProperties(dto,review);
+        review.setUserId(currentUserId);
+        review.setBookId(Long.parseLong(dto.getBookId()));
+
+        if (!save(review)) {
+            throw new BusinessException("创建评价失败，请重试");
+        }
+
+        return review2VO(review, currentUserId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteReview(String reviewId) {
+        Long currentUserId = BaseContext.getCurrentId();
+        boolean success = update().eq("id", reviewId)
+                .eq("user_id", currentUserId)
+                .set("is_deleted", 1)
+                .update();
+
+        if (!success) {
+            throw new BusinessException("删除评论失败，请重试");
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteAppointedReview(String reviewId) {
+        boolean success = update().eq("id", reviewId)
+                .set("is_deleted", 1)
+                .update();
+
+        if (!success) {
+            throw new BusinessException("删除评论失败，请重试");
+        }
+    }
+
+    @Override
+    public PageResponse<ReviewVO> getReviewsByBookId(Long currentPage, Long pageSize, String bookId) {
+        Page<Review> page = new Page<>(currentPage, pageSize);
+
+        List<Review> reviews = lambdaQuery().eq(Review::getBookId, Long.parseLong(bookId))
+                .eq(Review::getIsDeleted, 0)
+                .orderByDesc(Review::getGmtCreate)
+                .page(page)
+                .getRecords();
+
+        Long totalCount = lambdaQuery().eq(Review::getBookId, Long.parseLong(bookId))
+                .eq(Review::getIsDeleted, 0)
+                .count();
+
+
+        if (reviews == null || reviews.isEmpty()) {
+            return new PageResponse<>(currentPage, pageSize, Collections.emptyList(), 0L);
+        }
+
+        List<ReviewVO> reviewVOs = reviews.stream()
+                .map(review -> review2VO(review, review.getUserId()))
+                .toList();
+
+        return new PageResponse<>(currentPage, pageSize, reviewVOs,totalCount);
+    }
+
+    private ReviewVO review2VO(Review review, Long userId) {
+        User user = userMapper.selectById(userId);
+
+        ReviewVO vo = new ReviewVO();
+        BeanUtils.copyProperties(review,vo);
+        vo.setId(review.getId().toString());
+        vo.setBookId(review.getBookId().toString());
+        vo.setUserId(review.getUserId().toString());
+        vo.setUsername(user.getUserName());
+
+        return vo;
+    }
+}
