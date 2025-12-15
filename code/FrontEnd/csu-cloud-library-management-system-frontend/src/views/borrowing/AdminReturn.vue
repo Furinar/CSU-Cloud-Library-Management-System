@@ -2,12 +2,7 @@
   <div class="admin-return-container">
     <el-card class="common-card">
       <div class="toolbar">
-        <el-input v-model="searchKeyword" placeholder="输入书名关键词..." style="width: 300px;">
-          <template #append>
-             <el-button @click="handleSearch"><el-icon><Search /></el-icon></el-button>
-          </template>
-        </el-input>
-        <el-select v-model="filterStatus" placeholder="状态筛选" style="width: 120px; margin-left: 10px;" @change="handleSearch">
+        <el-select v-model="filterStatus" placeholder="状态筛选" style="width: 120px;" @change="handleSearch">
             <el-option label="全部" value="" />
             <el-option label="待确认" value="RETURN_PENDING" />
             <el-option label="借阅中" value="BORROWED" />
@@ -46,6 +41,7 @@
             <el-button 
               type="success" 
               size="small" 
+              class="action-btn"
               @click="handleConfirm(row)"
               :disabled="row.status === 'RETURNED'"
             >
@@ -70,12 +66,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { Search } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import { getAllBorrowRecords, confirmReturn } from '@/api/borrow';
 import type { BorrowRecord } from '@/types/borrow';
 
-const searchKeyword = ref('');
 const filterStatus = ref('');
 const returnRequests = ref<BorrowRecord[]>([]);
 const loading = ref(false);
@@ -120,7 +114,7 @@ const fetchData = async () => {
     const res = await getAllBorrowRecords(
       currentPage.value,
       pageSize.value,
-      searchKeyword.value || undefined,
+      undefined,
       filterStatus.value || undefined
     );
     returnRequests.value = res.records;
@@ -159,6 +153,10 @@ onMounted(fetchData);
     margin-top: 16px;
     display: flex;
     justify-content: flex-end;
+  }
+
+  .action-btn {
+    min-width: 80px;
   }
 }
 </style>

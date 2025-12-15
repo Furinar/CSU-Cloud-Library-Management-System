@@ -10,7 +10,7 @@ export const getUserList = (params: any) => {
 
 export const updateUserStatus = (id: string, status: number) => {
   return request({
-    url: `/user/status/${id}`,
+    url: `/admin/user/${id}/status`,
     method: 'put',
     data: { status }
   });

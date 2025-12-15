@@ -32,12 +32,10 @@
             <div class="author">作者：{{ book.author }}</div>
             <div class="publisher">出版社：{{ book.publisher }}</div>
             <div class="stock">
-              <el-tag :type="book.availableStock > 0 ? 'success' : 'danger'" size="small">
-                {{ book.availableStock > 0 ? '可借阅' : '暂无库存' }}
-              </el-tag>
               <span class="count">库存: {{ book.availableStock }}/{{ book.totalStock }}</span>
             </div>
-            <div class="actions" v-if="authStore.isAdmin" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px; display: flex; justify-content: flex-end;">
+            <div class="actions" v-if="authStore.isAdmin"
+              style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px; display: flex; justify-content: flex-end;">
               <el-button type="primary" link size="small" @click.stop="goToEdit(book.id)">编辑</el-button>
               <el-button type="danger" link size="small" @click.stop="handleDelete(book)">删除</el-button>
             </div>
@@ -74,7 +72,7 @@ const queryParams = reactive<BookQuery>({
   author: '',
   isbn: '',
   currentPage: 1,
-  pageSize: 10
+  pageSize: 12
 });
 
 const fetchBooks = async () => {

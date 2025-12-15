@@ -39,6 +39,7 @@
               <el-button 
                 size="small" 
                 type="success" 
+                class="action-btn"
                 @click="handleReturn(row)"
                 :disabled="row.status === 'RETURN_PENDING'"
               >
@@ -76,7 +77,7 @@
           </el-table-column>
           <el-table-column label="状态" width="100">
             <template #default="{ row }">
-              <el-tag type="info">已归还</el-tag>
+              <el-tag type="success">已归还</el-tag>
             </template>
           </el-table-column>
         </el-table>
@@ -239,6 +240,10 @@ watch(
     margin-top: 16px;
     display: flex;
     justify-content: flex-end;
+  }
+
+  .action-btn {
+    min-width: 80px;
   }
 }
 </style>

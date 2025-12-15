@@ -2,6 +2,8 @@ package com.skyfirst.library_borrowing.vo;
 
 import lombok.Data;
 
+import java.time.LocalDate;
+
 /**
  * 图书简略信息，可用于展示分页书籍列表中单个书籍元素
  */
@@ -12,6 +14,8 @@ public class BookBriefVO {
     private String publisher;
     private String author;
     private String category;
+    private String description;
+    private LocalDate publishDate;
     private String coverUrl;
     private Integer totalStock;
     private Integer availableStock; // 显示可用库存

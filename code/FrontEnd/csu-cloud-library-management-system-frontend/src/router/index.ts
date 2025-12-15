@@ -99,13 +99,13 @@ const router = createRouter({
           component: () => import('@/views/user/messages/index.vue'),
           meta: { title: '消息通知' }
         },
-        // // Admin Routes
-        // {
-        //   path: 'system/users',
-        //   name: 'SystemUsers',
-        //   component: () => import('@/views/system/UserList.vue'),
-        //   meta: { roles: ['admin'], title: '用户管理' }
-        // },
+        // Admin Routes
+        {
+          path: 'system/users',
+          name: 'SystemUsers',
+          component: () => import('@/views/system/UserList.vue'),
+          meta: { roles: ['admin'], title: '用户管理' }
+        },
         {
           path: 'system/notification',
           name: 'SystemNotification',

@@ -89,7 +89,7 @@
             </el-icon>
             <span>系统设置</span>
           </template>
-          <!-- <el-menu-item index="/system/users">用户管理</el-menu-item> -->
+          <el-menu-item index="/system/users">用户管理</el-menu-item>
           <el-menu-item index="/system/notification">消息管理</el-menu-item>
         </el-sub-menu>
 

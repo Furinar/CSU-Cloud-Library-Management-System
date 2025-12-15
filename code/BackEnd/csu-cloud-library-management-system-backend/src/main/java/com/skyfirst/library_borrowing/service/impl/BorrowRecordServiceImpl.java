@@ -127,6 +127,7 @@ public class BorrowRecordServiceImpl extends ServiceImpl<BorrowRecordMapper, Bor
         List<BorrowRecord> borrowRecords = query()
                 .eq("user_id", userId)
                 .ne("status", "RETURNED")
+                .last("ORDER BY CASE WHEN status = 'OVERDUE' OR due_date < NOW() THEN 0 ELSE 1 END, borrow_date DESC")
                 .page(page)
                 .getRecords();
 
@@ -149,6 +150,7 @@ public class BorrowRecordServiceImpl extends ServiceImpl<BorrowRecordMapper, Bor
         List<BorrowRecord> borrowRecords = query()
                 .eq("user_id", userId)
                 .eq("status", "RETURNED")
+                .orderByDesc("borrow_date")
                 .page(page)
                 .getRecords();
 
@@ -192,6 +194,7 @@ public class BorrowRecordServiceImpl extends ServiceImpl<BorrowRecordMapper, Bor
         boolean statusCondition = status != null && !status.isEmpty();
         query()
                 .like(condition, "book_title", bookTitle)
+                .last("ORDER BY CASE WHEN status = 'RETURN_PENDING' THEN 0 ELSE 1 END, borrow_date DESC")
                 .eq(statusCondition, "status", status)
                 .page(page);
 

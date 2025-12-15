@@ -71,8 +71,8 @@ const fetchUsers = async () => {
       pageSize: pageSize.value,
       keyword: searchKeyword.value
     });
-    users.value = res.data.records;
-    total.value = res.data.total;
+    users.value = res.records;
+    total.value = res.totalCount;
   } catch (error) {
     console.error(error);
   } finally {

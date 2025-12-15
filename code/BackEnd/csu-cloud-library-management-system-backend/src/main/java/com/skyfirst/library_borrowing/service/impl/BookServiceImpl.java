@@ -64,6 +64,8 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements IB
                         BeanUtils.copyProperties(book, vo);
                         vo.setId(book.getId().toString());
                         vo.setPublisher(book.getPublisher());
+                        vo.setDescription(book.getDescription());
+                        vo.setPublishDate(book.getPublishDate());
                         return vo;
                     }
                 ).toList();
@@ -189,6 +191,8 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements IB
                     BeanUtils.copyProperties(book, vo);
                     vo.setId(book.getId().toString());
                     vo.setPublisher(book.getPublisher());
+                    vo.setDescription(book.getDescription());
+                    vo.setPublishDate(book.getPublishDate());
                     return vo;
                 }).toList();
     }

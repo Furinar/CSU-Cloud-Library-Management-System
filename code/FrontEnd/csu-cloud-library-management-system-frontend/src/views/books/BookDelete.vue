@@ -42,9 +42,6 @@
         <el-table-column prop="category" label="分类" width="120" show-overflow-tooltip />
         <el-table-column label="库存" width="140">
           <template #default="{ row }">
-            <el-tag :type="row.availableStock > 0 ? 'success' : 'danger'" size="small">
-              {{ row.availableStock > 0 ? '可借阅' : '无库存' }}
-            </el-tag>
             <span class="stock-count">{{ row.availableStock }}/{{ row.totalStock }}</span>
           </template>
         </el-table-column>
