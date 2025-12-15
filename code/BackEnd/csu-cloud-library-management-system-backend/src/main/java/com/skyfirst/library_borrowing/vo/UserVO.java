@@ -15,4 +15,5 @@ public class UserVO {
     private String username;
     private String email;
     private String role;
+    private Integer isDeleted;
 }

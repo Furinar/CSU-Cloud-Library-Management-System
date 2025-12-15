@@ -50,6 +50,40 @@ public class NotificationServiceImpl extends ServiceImpl<NotificationMapper, Not
     }
 
     @Override
+    public List<NotificationVO> getAllNotifications(Long currentPage, Long pageSize, String keyword) {
+        Page<Notification> page = new Page<>(currentPage, pageSize);
+        LambdaQueryWrapper<Notification> wrapper = new LambdaQueryWrapper<>();
+        if (keyword != null && !keyword.isEmpty()) {
+            wrapper.like(Notification::getTitle, keyword)
+                    .or()
+                    .like(Notification::getContent, keyword);
+        }
+        wrapper.orderByDesc(Notification::getGmtCreate);
+        
+        List<Notification> notifications = page(page, wrapper).getRecords();
+
+        if (notifications.isEmpty()) {
+            return List.of();
+        }
+
+        List<Long> userIds = notifications.stream()
+                .map(Notification::getUserId)
+                .distinct()
+                .toList();
+
+        java.util.Map<Long, String> userMap = userMapper.selectBatchIds(userIds).stream()
+                .collect(java.util.stream.Collectors.toMap(User::getId, User::getUserName));
+
+        return notifications.stream()
+                .map(notification -> {
+                    NotificationVO vo = notification2VO(notification);
+                    vo.setUserName(userMap.get(notification.getUserId()));
+                    return vo;
+                })
+                .toList();
+    }
+
+    @Override
     public String getUnreadCount() {
         Long currentUserId = BaseContext.getCurrentId();
         return lambdaQuery()

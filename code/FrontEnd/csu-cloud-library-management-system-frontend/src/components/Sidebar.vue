@@ -90,7 +90,7 @@
             <span>系统设置</span>
           </template>
           <!-- <el-menu-item index="/system/users">用户管理</el-menu-item> -->
-          <el-menu-item index="/system/notification">消息推送</el-menu-item>
+          <el-menu-item index="/system/notification">消息管理</el-menu-item>
           <el-menu-item index="/system/logs">操作日志</el-menu-item>
         </el-sub-menu>
 

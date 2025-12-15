@@ -66,7 +66,7 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { getBooks, deleteBooks, resolveBooksTotal } from '@/api/book';
+import { getBooks, deleteBook, resolveBooksTotal } from '@/api/book';
 import type { Book, BookQuery } from '@/types/book';
 
 const loading = ref(false);
@@ -126,9 +126,15 @@ const confirmDelete = async (ids: string[]) => {
   await ElMessageBox.confirm('确定要删除所选图书吗？删除后将无法恢复。', '删除确认', {
     type: 'warning'
   });
-  await deleteBooks(ids);
-  ElMessage.success('删除成功');
-  fetchData();
+  try {
+    for (const id of ids) {
+      await deleteBook(id);
+    }
+    ElMessage.success('删除成功');
+    fetchData();
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 const handleBatchDelete = () => {

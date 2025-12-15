@@ -27,7 +27,7 @@ export const getTop10Books = (): Promise<{ top10Books: TopBook[] }> => {
 
 export const createBook = (data: BookCreateDTO): Promise<Book> => {
   return request({
-    url: '/admin/book',
+    url: '/book',
     method: 'post',
     data,
   });
@@ -35,17 +35,24 @@ export const createBook = (data: BookCreateDTO): Promise<Book> => {
 
 export const updateBook = (bookId: string, data: BookUpdateDTO): Promise<Book> => {
   return request({
-    url: `/admin/book/${bookId}`,
+    url: `/book/${bookId}`,
     method: 'put',
     data,
   });
 };
 
-export const deleteBooks = (bookIdList: string[]): Promise<void> => {
+export const deleteBook = (bookId: string): Promise<void> => {
   return request({
-    url: '/admin/book',
+    url: `/book/${bookId}`,
     method: 'delete',
-    data: { bookIdList },
+  });
+};
+
+export const getRecommendBooks = (count: number = 3): Promise<Book[]> => {
+  return request({
+    url: '/book/recommend',
+    method: 'get',
+    params: { count }
   });
 };
 
@@ -104,10 +111,7 @@ export const resolveBooksTotal = async (
 };
 
 
-export const getRecommendBooks = async (): Promise<Book[]> => {
-  const res = await getBooks({ currentPage: 1, pageSize: 5 });
-  return res.records ? res.records.slice(0, 5) : [];
-};
+
 
 /**
  * 获取图书分类统计

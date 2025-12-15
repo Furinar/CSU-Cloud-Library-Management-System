@@ -2,6 +2,8 @@ package com.skyfirst.library_borrowing.controller;
 
 import com.skyfirst.library_borrowing.common.ApiResponse;
 import com.skyfirst.library_borrowing.common.PageResponse;
+import com.skyfirst.library_borrowing.dto.BookCreateDTO;
+import com.skyfirst.library_borrowing.dto.BookUpdateDTO;
 import com.skyfirst.library_borrowing.exception.BusinessException;
 import com.skyfirst.library_borrowing.service.IBookService;
 import com.skyfirst.library_borrowing.vo.BookBriefVO;
@@ -9,6 +11,7 @@ import com.skyfirst.library_borrowing.vo.BookDetailVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -51,5 +54,26 @@ public class BookController {
     public ApiResponse<List<BookDetailVO>> getTop10Books() {
         List<BookDetailVO> top10Books = bookService.getTop10Books();
         return ApiResponse.success(top10Books);
+    }
+
+    @PostMapping
+    public ApiResponse<BookBriefVO> addBook(@RequestBody BookCreateDTO bookCreateDTO) {
+        return ApiResponse.success(bookService.creatBook(bookCreateDTO));
+    }
+
+    @PutMapping("/{id}")
+    public ApiResponse<BookDetailVO> updateBook(@PathVariable String id, @RequestBody BookUpdateDTO bookUpdateDTO) {
+        return ApiResponse.success(bookService.updateBookById(id, bookUpdateDTO));
+    }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<Void> deleteBook(@PathVariable String id) {
+        bookService.deleteBooksById(Collections.singletonList(id));
+        return ApiResponse.success(null);
+    }
+
+    @GetMapping("/recommend")
+    public ApiResponse<List<BookBriefVO>> getRecommendBooks(@RequestParam(defaultValue = "3") int count) {
+        return ApiResponse.success(bookService.getRandomBooks(count));
     }
 }

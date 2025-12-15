@@ -53,7 +53,7 @@ public class SecurityConfig {
                 // 5. 请求授权规则（精准匹配，避免路径匹配问题）
                 .authorizeHttpRequests(auth -> auth
                         // 放行登录/注册接口
-                        .requestMatchers("/user/login", "/user/register").permitAll()
+                        .requestMatchers("/user/login", "/user/register", "/user/reset-password").permitAll()
                         // 可选：放行Swagger文档（如果有）
                         // .requestMatchers("/doc.html", "/webjars/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
                         // 可选：放行静态资源

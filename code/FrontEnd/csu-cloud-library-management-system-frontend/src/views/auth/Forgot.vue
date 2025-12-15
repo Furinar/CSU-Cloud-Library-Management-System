@@ -75,9 +75,12 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
+import { useRouter } from 'vue-router';
 import { User, Lock, Message } from '@element-plus/icons-vue';
 import { ElMessage, type FormInstance } from 'element-plus';
+import { resetPassword } from '@/api/user';
 
+const router = useRouter();
 const formRef = ref<FormInstance>();
 const loading = ref(false);
 
@@ -88,6 +91,14 @@ const form = reactive({
   confirmPassword: ''
 });
 
+const validateConfirmPassword = (rule: any, value: any, callback: any) => {
+  if (value !== form.newPassword) {
+    callback(new Error('两次输入密码不一致'));
+  } else {
+    callback();
+  }
+};
+
 const rules = {
   account: [{ required: true, message: '请输入账号', trigger: 'blur' }],
   email: [
@@ -97,32 +108,27 @@ const rules = {
   newPassword: [{ required: true, message: '请输入新密码', trigger: 'blur' }],
   confirmPassword: [
     { required: true, message: '请再次输入新密码', trigger: 'blur' },
-    {
-      validator: (_: any, value: string, callback: (err?: Error) => void) => {
-        if (value !== form.newPassword) {
-          callback(new Error('两次密码输入不一致'));
-        } else {
-          callback();
-        }
-      },
-      trigger: 'blur'
-    }
+    { validator: validateConfirmPassword, trigger: 'blur' }
   ]
 };
 
 const handleSubmit = async () => {
   if (!formRef.value) return;
   await formRef.value.validate(async (valid) => {
-    if (!valid) return;
-    loading.value = true;
-    try {
-      // TODO: 调用后端找回密码接口（目前无接口，前端仅提示）
-      await new Promise(resolve => setTimeout(resolve, 500));
-      ElMessage.success('已提交重置请求，如为演示环境请直接使用测试账号登录');
-    } catch (error) {
-      ElMessage.error('提交失败');
-    } finally {
-      loading.value = false;
+    if (valid) {
+      loading.value = true;
+      try {
+        await resetPassword({
+          email: form.email,
+          newPassword: form.newPassword
+        });
+        ElMessage.success('密码重置成功，请登录');
+        router.push('/auth/login');
+      } catch (error) {
+        console.error(error);
+      } finally {
+        loading.value = false;
+      }
     }
   });
 };

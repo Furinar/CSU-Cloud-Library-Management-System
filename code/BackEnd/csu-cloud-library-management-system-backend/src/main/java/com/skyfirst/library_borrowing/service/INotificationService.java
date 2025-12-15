@@ -27,4 +27,6 @@ public interface INotificationService extends IService<Notification> {
     void pushNotification2All(NotificationPushDTO dto);
 
     void pushNotification2User(String userName, NotificationPushDTO dto);
+
+    List<NotificationVO> getAllNotifications(Long currentPage, Long pageSize, String keyword);
 }

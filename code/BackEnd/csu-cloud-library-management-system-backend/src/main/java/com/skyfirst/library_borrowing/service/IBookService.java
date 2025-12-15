@@ -32,4 +32,6 @@ public interface IBookService extends IService<Book> {
     String getAllBooksCount();
 
     List<BookDetailVO> getTop10Books();
+
+    List<BookBriefVO> getRandomBooks(int count);
 }

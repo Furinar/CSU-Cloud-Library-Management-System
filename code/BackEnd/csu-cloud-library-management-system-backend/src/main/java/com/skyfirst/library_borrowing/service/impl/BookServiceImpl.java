@@ -172,6 +172,27 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements IB
                 .toList();
     }
 
+    @Override
+    public List<BookBriefVO> getRandomBooks(int count) {
+        List<Book> books = lambdaQuery()
+                .eq(Book::getIsDeleted, 0)
+                .last("ORDER BY RAND() LIMIT " + count)
+                .list();
+
+        if (books == null || books.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return books.stream()
+                .map(book -> {
+                    BookBriefVO vo = new BookBriefVO();
+                    BeanUtils.copyProperties(book, vo);
+                    vo.setId(book.getId().toString());
+                    vo.setPublisher(book.getPublisher());
+                    return vo;
+                }).toList();
+    }
+
     private Double getAverageRatingByBookId(String bookId) {
         List<Review> reviews = reviewMapper.selectList(new QueryWrapper<Review>().eq("book_id", bookId));
         Double sum = 0.0;

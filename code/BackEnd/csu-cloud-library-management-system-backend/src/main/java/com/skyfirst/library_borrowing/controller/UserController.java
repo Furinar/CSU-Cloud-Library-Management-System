@@ -1,10 +1,10 @@
 package com.skyfirst.library_borrowing.controller;
 
 import com.skyfirst.library_borrowing.common.ApiResponse;
+import com.skyfirst.library_borrowing.common.PageResponse;
 import com.skyfirst.library_borrowing.common.ResultCode;
 import com.skyfirst.library_borrowing.common.context.BaseContext;
-import com.skyfirst.library_borrowing.dto.UserLoginDTO;
-import com.skyfirst.library_borrowing.dto.UserRegisterDTO;
+import com.skyfirst.library_borrowing.dto.*;
 import com.skyfirst.library_borrowing.entity.User;
 import com.skyfirst.library_borrowing.exception.BusinessException;
 import com.skyfirst.library_borrowing.service.IUserService;
@@ -55,6 +55,7 @@ public class UserController {
                 .username(loginuser.getUserName())
                 .email(loginuser.getEmail())
                 .role(loginuser.getRole())
+                .isDeleted(Boolean.TRUE.equals(loginuser.getIsDeleted()) ? 1 : 0)
                 .build();
         LoginVO loginVO = LoginVO.builder()
                 .userInfo(userVO)
@@ -102,8 +103,43 @@ public class UserController {
                 .username(user.getUserName())
                 .email(user.getEmail())
                 .role(user.getRole())
+                .isDeleted(Boolean.TRUE.equals(user.getIsDeleted()) ? 1 : 0)
                 .build();
         return ApiResponse.success(userVO);
+    }
+
+    @GetMapping("/list")
+    public ApiResponse<PageResponse<UserVO>> listUsers(
+            @RequestParam(defaultValue = "1") Long currentPage,
+            @RequestParam(defaultValue = "10") Long pageSize,
+            @RequestParam(required = false) String keyword) {
+        return ApiResponse.success(userService.getUsers(currentPage, pageSize, keyword));
+    }
+
+    @PutMapping("/status/{id}")
+    public ApiResponse<Void> updateUserStatus(@PathVariable Long id, @RequestBody UserStatusDTO statusDTO) {
+        userService.updateUserStatus(id, statusDTO.getStatus());
+        return ApiResponse.success(null);
+    }
+
+    @PutMapping("/password")
+    public ApiResponse<Void> updatePassword(@RequestBody UserPasswordDTO passwordDTO) {
+        Long id = BaseContext.getCurrentId();
+        userService.updatePassword(id, passwordDTO.getOldPassword(), passwordDTO.getNewPassword());
+        return ApiResponse.success(null);
+    }
+
+    @PutMapping("/profile")
+    public ApiResponse<Void> updateProfile(@RequestBody UserProfileDTO profileDTO) {
+        Long id = BaseContext.getCurrentId();
+        userService.updateProfile(id, profileDTO.getEmail());
+        return ApiResponse.success(null);
+    }
+
+    @PostMapping("/reset-password")
+    public ApiResponse<Void> resetPassword(@RequestBody UserResetPasswordDTO resetDTO) {
+        userService.resetPassword(resetDTO.getEmail(), resetDTO.getNewPassword());
+        return ApiResponse.success(null);
     }
 
 }

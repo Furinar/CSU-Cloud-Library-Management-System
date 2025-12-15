@@ -18,4 +18,5 @@ public class NotificationVO {
     private String type;
     private String status; // UNREAD, READ
     private LocalDateTime gmtCreate; // 通知创建时间
+    private String userName;
 }

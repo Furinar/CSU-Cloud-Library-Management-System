@@ -98,7 +98,7 @@ const router = createRouter({
           path: 'system/notification',
           name: 'SystemNotification',
           component: () => import('@/views/system/Notification.vue'),
-          meta: { roles: ['admin'], title: '消息推送' }
+          meta: { roles: ['admin'], title: '消息管理' }
         },
         {
           path: 'system/logs',

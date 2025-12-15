@@ -13,6 +13,7 @@ export interface Notification {
 export interface NotificationQuery {
   currentPage?: number;
   pageSize?: number;
+  keyword?: string;
 }
 
 export interface NotificationPushDTO {
@@ -22,9 +23,21 @@ export interface NotificationPushDTO {
   status: 'UNREAD' | 'READ';
 }
 
+export interface NotificationVO extends Notification {
+  userName?: string;
+}
+
 export const getNotifications = (params: NotificationQuery): Promise<PageResponse<Notification>> => {
   return request({
     url: '/notification/me',
+    method: 'get',
+    params,
+  });
+};
+
+export const getAllNotificationsAdmin = (params: NotificationQuery): Promise<PageResponse<NotificationVO>> => {
+  return request({
+    url: '/admin/notification/list',
     method: 'get',
     params,
   });

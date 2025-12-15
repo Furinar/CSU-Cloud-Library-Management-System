@@ -54,13 +54,19 @@
         <!-- New Books -->
         <div class="section-block">
           <div class="section-header">
-            <h2 class="section-title">新书推荐</h2>
-            <el-link type="primary" @click="$router.push('/books/recommend')">更多 <el-icon>
-                <ArrowRight />
-              </el-icon></el-link>
+            <h2 class="section-title">推荐图书</h2>
+            <div class="header-actions">
+              <el-button link type="primary" @click="refreshRecommend" :loading="recommendLoading">
+                <el-icon style="margin-right: 4px"><Refresh /></el-icon> 换一批
+              </el-button>
+              <el-divider direction="vertical" />
+              <el-link type="primary" @click="$router.push('/books/recommend')">更多 <el-icon>
+                  <ArrowRight />
+                </el-icon></el-link>
+            </div>
           </div>
 
-          <el-row :gutter="15" v-loading="loading">
+          <el-row :gutter="15" v-loading="loading || recommendLoading">
             <el-col :span="8" v-for="book in recommendBooks" :key="book.id">
               <div class="book-card small" @click="goToDetail(book.id)">
                 <div class="book-cover">
@@ -134,7 +140,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { Search, User, Collection, Notebook, Odometer, ArrowRight, Star } from '@element-plus/icons-vue';
+import { Search, User, Collection, Notebook, Odometer, ArrowRight, Star, Refresh } from '@element-plus/icons-vue';
 import { useAuthStore } from '@/stores/auth';
 import { getRecommendBooks, getTop10Books, getAllBooksCount, getBookById, getBooksStatisticsByCategory } from '@/api/book';
 import { getUsersCount } from '@/api/auth';
@@ -161,6 +167,7 @@ const searchPlaceholder = computed(() => {
 });
 const recommendBooks = ref<Book[]>([]);
 const loading = ref(false);
+const recommendLoading = ref(false);
 const categoryChart = ref<HTMLElement>();
 const categoryStatistics = ref<Array<{ name: string; value: number }>>([]);
 let myCategoryChart: echarts.ECharts | null = null;
@@ -248,12 +255,23 @@ const fetchCategoryStatistics = async () => {
   }
 };
 
+const refreshRecommend = async () => {
+  recommendLoading.value = true;
+  try {
+    const res = await getRecommendBooks(3);
+    recommendBooks.value = res;
+  } catch (e) {
+    console.error(e);
+  } finally {
+    recommendLoading.value = false;
+  }
+};
+
 onMounted(async () => {
   loading.value = true;
   try {
     // API call to get recommended books
-    const res = await getRecommendBooks();
-    recommendBooks.value = res.slice(0, 3);
+    await refreshRecommend();
     const tasks = [fetchTopBooks(), fetchCategoryStatistics()];
     if (isAdmin.value) tasks.unshift(fetchStats());
     await Promise.all(tasks);

@@ -19,4 +19,14 @@ public interface IUserService extends IService<User> {
     public User getUserInfo(Long userId);
 
     String getAllUsersCount();
+
+    com.skyfirst.library_borrowing.common.PageResponse<com.skyfirst.library_borrowing.vo.UserVO> getUsers(Long currentPage, Long pageSize, String keyword);
+
+    void updateUserStatus(Long userId, Integer status);
+
+    void updatePassword(Long userId, String oldPassword, String newPassword);
+
+    void updateProfile(Long userId, String email);
+
+    void resetPassword(String email, String newPassword);
 }
