@@ -6,6 +6,7 @@ import com.skyfirst.library_borrowing.dto.ReturnRequestDTO;
 import com.skyfirst.library_borrowing.entity.BorrowRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.skyfirst.library_borrowing.vo.BorrowRecordVO;
+import com.skyfirst.library_borrowing.common.PageResponse;
 
 import java.util.List;
 
@@ -23,13 +24,15 @@ public interface IBorrowRecordService extends IService<BorrowRecord> {
 
     BorrowRecordVO returnBookByBorrowId(ReturnRequestDTO dto);
 
+    BorrowRecordVO confirmReturn(ReturnRequestDTO dto);
+
     List<BorrowRecordVO> getCurrentBorrowRecords(Long currentPage, Long pageSize);
 
     List<BorrowRecordVO> getHistoryBorrowRecords(Long currentPage, Long pageSize);
 
     void deleteHistoryRecords(HistoryRecordsDeleteDTO dto);
 
-    List<BorrowRecordVO> getAllBorrowRecords(Long currentPage, Long pageSize, String bookTitle);
+    PageResponse<BorrowRecordVO> getAllBorrowRecords(Long currentPage, Long pageSize, String bookTitle, String status);
 
     String getAllRecordsCount();
 

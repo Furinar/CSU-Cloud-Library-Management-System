@@ -2,6 +2,7 @@ package com.skyfirst.library_borrowing.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.skyfirst.library_borrowing.common.PageResponse;
 import com.skyfirst.library_borrowing.common.context.BaseContext;
 import com.skyfirst.library_borrowing.dto.BorrowRequestDTO;
 import com.skyfirst.library_borrowing.dto.HistoryRecordsDeleteDTO;
@@ -74,11 +75,28 @@ public class BorrowRecordServiceImpl extends ServiceImpl<BorrowRecordMapper, Bor
             throw new BusinessException("传入的归还数据为空或借阅ID为空");
         }
         boolean success = update().eq("id", Long.parseLong(dto.getBorrowRecordId()))
+                .set("status", "RETURN_PENDING")
+                .update();
+        if (!success) {
+            throw new BusinessException("申请归还书籍失败，请重试");
+        }
+        BorrowRecord borrowRecord = query().eq("id", Long.parseLong(dto.getBorrowRecordId())).one();
+
+        return borrowRecord2VO(borrowRecord, borrowRecord.getBookId());
+    }
+
+    @Override
+    @Transactional
+    public BorrowRecordVO confirmReturn(ReturnRequestDTO dto) {
+        if (dto == null || dto.getBorrowRecordId() == null || dto.getBorrowRecordId().isEmpty()) {
+            throw new BusinessException("传入的归还数据为空或借阅ID为空");
+        }
+        boolean success = update().eq("id", Long.parseLong(dto.getBorrowRecordId()))
                 .set("return_date", LocalDateTime.now())
                 .set("status", "RETURNED")
                 .update();
         if (!success) {
-            throw new BusinessException("归还书籍失败，请重试");
+            throw new BusinessException("确认归还书籍失败，请重试");
         }
         BorrowRecord borrowRecord = query().eq("id", Long.parseLong(dto.getBorrowRecordId())).one();
 
@@ -143,22 +161,27 @@ public class BorrowRecordServiceImpl extends ServiceImpl<BorrowRecordMapper, Bor
     }
 
     @Override
-    public List<BorrowRecordVO> getAllBorrowRecords(Long currentPage, Long pageSize, String bookTitle) {
+    public PageResponse<BorrowRecordVO> getAllBorrowRecords(Long currentPage, Long pageSize, String bookTitle, String status) {
         Page<BorrowRecord> page = new Page<>(currentPage, pageSize);
 
         boolean condition = bookTitle != null && !bookTitle.isEmpty();
-        List<BorrowRecord> borrowRecords = query()
+        boolean statusCondition = status != null && !status.isEmpty();
+        query()
                 .like(condition, "book_title", bookTitle)
-                .page(page)
-                .getRecords();
+                .eq(statusCondition, "status", status)
+                .page(page);
+
+        List<BorrowRecord> borrowRecords = page.getRecords();
 
         if (borrowRecords == null || borrowRecords.isEmpty()) {
-            return Collections.emptyList();
+            return new PageResponse<>(currentPage, pageSize, Collections.emptyList(), 0L);
         }
 
-        return borrowRecords.stream()
+        List<BorrowRecordVO> vos = borrowRecords.stream()
                 .map(borrowRecord -> borrowRecord2VO(borrowRecord, borrowRecord.getBookId()))
                 .toList();
+
+        return new PageResponse<>(currentPage, pageSize, vos, page.getTotal());
     }
 
     @Override
@@ -186,13 +209,17 @@ public class BorrowRecordServiceImpl extends ServiceImpl<BorrowRecordMapper, Bor
 
     private BorrowRecordVO borrowRecord2VO(BorrowRecord borrowRecord, Long bookId) {
         Book book = bookMapper.selectById(bookId);
+        User user = userMapper.selectById(borrowRecord.getUserId());
         BorrowRecordVO vo = new BorrowRecordVO();
         BeanUtils.copyProperties(borrowRecord, vo);
         vo.setId(borrowRecord.getId().toString());
         vo.setBookId(bookId.toString());
         vo.setBookTitle(book.getTitle());
         vo.setBookCoverUrl(book.getCoverUrl());
-
+        if (user != null) {
+            vo.setUserId(user.getId().toString());
+            vo.setUserName(user.getUserName());
+        }
         return vo;
     }
 }

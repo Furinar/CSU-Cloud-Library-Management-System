@@ -15,6 +15,8 @@ public class BorrowRecordVO {
     private String bookId; // 图书ID
     private String bookTitle; // 书名
     private String bookCoverUrl; // 封面图片url
+    private String userId; // 用户ID
+    private String userName; // 用户名
     private LocalDateTime borrowDate; // 借阅日期
     private LocalDateTime dueDate; // 应还日期
     private LocalDateTime returnDate; // 实际归还日期 (未归还则为null)

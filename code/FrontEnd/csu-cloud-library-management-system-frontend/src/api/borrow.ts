@@ -18,6 +18,14 @@ export const returnBook = (data: ReturnRequestDTO): Promise<BorrowRecord> => {
   });
 };
 
+export const confirmReturn = (data: ReturnRequestDTO): Promise<BorrowRecord> => {
+  return request({
+    url: '/admin/borrow/return/confirm',
+    method: 'post',
+    data,
+  });
+};
+
 export const getCurrentBorrows = (currentPage: number, pageSize: number): Promise<PageResponse<BorrowRecord>> => {
   return request({
     url: '/borrow/me',
@@ -45,12 +53,13 @@ export const deleteHistoryRecords = (borrowRecordIdList: string[]): Promise<void
 export const getAllBorrowRecords = (
   currentPage: number,
   pageSize: number,
-  bookTitle?: string
+  bookTitle?: string,
+  status?: string
 ): Promise<PageResponse<BorrowRecord>> => {
   return request({
     url: '/admin/borrow',
     method: 'get',
-    params: { currentPage, pageSize, bookTitle }
+    params: { currentPage, pageSize, bookTitle, status }
   });
 };
 

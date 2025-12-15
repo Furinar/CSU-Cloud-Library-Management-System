@@ -6,7 +6,9 @@ export interface BorrowRecord {
   borrowDate: string;
   dueDate: string;
   returnDate: string | null;
-  status: 'BORROWED' | 'RETURNED' | 'OVERDUE';
+  status: 'BORROWED' | 'RETURNED' | 'OVERDUE' | 'RETURN_PENDING';
+  userId?: string;
+  userName?: string;
 }
 
 export interface BorrowRequestDTO {

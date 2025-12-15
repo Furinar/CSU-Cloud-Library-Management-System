@@ -7,24 +7,52 @@
              <el-button @click="handleSearch"><el-icon><Search /></el-icon></el-button>
           </template>
         </el-input>
+        <el-select v-model="filterStatus" placeholder="状态筛选" style="width: 120px; margin-left: 10px;" @change="handleSearch">
+            <el-option label="全部" value="" />
+            <el-option label="待确认" value="RETURN_PENDING" />
+            <el-option label="借阅中" value="BORROWED" />
+            <el-option label="已逾期" value="OVERDUE" />
+            <el-option label="已归还" value="RETURNED" />
+        </el-select>
       </div>
       
       <el-table :data="returnRequests" v-loading="loading" style="width: 100%; margin-top: 20px;">
         <el-table-column prop="bookTitle" label="图书" />
-        <el-table-column prop="borrowDate" label="借阅日期" />
-        <el-table-column prop="dueDate" label="应还日期" />
+        <el-table-column prop="userName" label="归还用户" />
+        <el-table-column label="借阅日期">
+          <template #default="{ row }">
+            {{ formatDateTime(row.borrowDate) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="应还日期">
+          <template #default="{ row }">
+            {{ formatDateTime(row.dueDate) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="归还时间">
+          <template #default="{ row }">
+            {{ formatDateTime(row.returnDate) }}
+          </template>
+        </el-table-column>
         <el-table-column label="状态">
           <template #default="{ row }">
-            <el-tag :type="row.status === 'OVERDUE' ? 'danger' : 'warning'">
-              {{ row.status === 'RETURNED' ? '已归还' : row.status === 'OVERDUE' ? '已逾期' : '待归还确认' }}
+            <el-tag :type="getStatusType(row.status)">
+              {{ getStatusText(row.status) }}
             </el-tag>
           </template>
         </el-table-column>
-        <!-- <el-table-column label="操作">
+        <el-table-column label="操作">
           <template #default="{ row }">
-            <el-button type="success" size="small" @click="handleConfirm(row)">确认归还</el-button>
+            <el-button 
+              type="success" 
+              size="small" 
+              @click="handleConfirm(row)"
+              :disabled="row.status === 'RETURNED'"
+            >
+              {{ row.status === 'RETURNED' ? '已归还' : '确认归还' }}
+            </el-button>
           </template>
-        </el-table-column> -->
+        </el-table-column>
       </el-table>
 
       <div class="pagination" v-if="total > 0">
@@ -44,15 +72,47 @@
 import { ref, onMounted } from 'vue';
 import { Search } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
-import { getAllBorrowRecords, getAllRecordsCount, returnBook } from '@/api/borrow';
+import { getAllBorrowRecords, confirmReturn } from '@/api/borrow';
 import type { BorrowRecord } from '@/types/borrow';
 
 const searchKeyword = ref('');
+const filterStatus = ref('');
 const returnRequests = ref<BorrowRecord[]>([]);
 const loading = ref(false);
 const currentPage = ref(1);
 const pageSize = ref(10);
 const total = ref(0);
+
+const formatDateTime = (dateStr: string | null) => {
+  if (!dateStr) return '-';
+  const date = new Date(dateStr);
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  const h = String(date.getHours()).padStart(2, '0');
+  const min = String(date.getMinutes()).padStart(2, '0');
+  const s = String(date.getSeconds()).padStart(2, '0');
+  return `${y}-${m}-${d} ${h}:${min}:${s}`;
+};
+
+const getStatusType = (status: string) => {
+    switch (status) {
+        case 'OVERDUE': return 'danger';
+        case 'RETURNED': return 'success';
+        case 'RETURN_PENDING': return 'warning';
+        default: return 'primary';
+    }
+};
+
+const getStatusText = (status: string) => {
+    switch (status) {
+        case 'OVERDUE': return '已逾期';
+        case 'RETURNED': return '已归还';
+        case 'RETURN_PENDING': return '待确认';
+        case 'BORROWED': return '借阅中';
+        default: return status;
+    }
+};
 
 const fetchData = async () => {
   loading.value = true;
@@ -60,10 +120,11 @@ const fetchData = async () => {
     const res = await getAllBorrowRecords(
       currentPage.value,
       pageSize.value,
-      searchKeyword.value || undefined
+      searchKeyword.value || undefined,
+      filterStatus.value || undefined
     );
     returnRequests.value = res.records;
-    total.value = await getAllRecordsCount();
+    total.value = res.totalCount || 0;
   } finally {
     loading.value = false;
   }
@@ -76,7 +137,7 @@ const handleSearch = () => {
 
 const handleConfirm = async (row: BorrowRecord) => {
   try {
-    await returnBook({ borrowRecordId: row.id });
+    await confirmReturn({ borrowRecordId: row.id });
     ElMessage.success('归还确认成功');
     fetchData();
   } catch (error) {

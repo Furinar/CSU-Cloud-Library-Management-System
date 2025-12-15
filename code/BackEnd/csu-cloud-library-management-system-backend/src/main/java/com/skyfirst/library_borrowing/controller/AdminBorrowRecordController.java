@@ -7,10 +7,7 @@ import com.skyfirst.library_borrowing.service.IBorrowRecordService;
 import com.skyfirst.library_borrowing.util.VerifyUtil;
 import com.skyfirst.library_borrowing.vo.BorrowRecordVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,20 +18,28 @@ public class AdminBorrowRecordController {
     @Autowired
     private IBorrowRecordService borrowRecordService;
 
+    @PostMapping("/return/confirm")
+    public ApiResponse<BorrowRecordVO> confirmReturn(@RequestBody com.skyfirst.library_borrowing.dto.ReturnRequestDTO dto) {
+        VerifyUtil.isAdmin();
+        BorrowRecordVO vo = borrowRecordService.confirmReturn(dto);
+        return ApiResponse.success(vo);
+    }
+
     @GetMapping
     public ApiResponse<PageResponse<BorrowRecordVO>> getAllBorrowRecords(
             @RequestParam Long currentPage,
             @RequestParam Long pageSize,
-            @RequestParam(required = false) String bookTitle
+            @RequestParam(required = false) String bookTitle,
+            @RequestParam(required = false) String status
     ) {
         VerifyUtil.isAdmin();
         if (currentPage == null || pageSize == null) {
             throw new BusinessException("传入的当前页码或每页大小为空，请重新传入");
         }
 
-        List<BorrowRecordVO> vo = borrowRecordService.getAllBorrowRecords(currentPage, pageSize, bookTitle);
+        PageResponse<BorrowRecordVO> response = borrowRecordService.getAllBorrowRecords(currentPage, pageSize, bookTitle, status);
 
-        return ApiResponse.success(new PageResponse<>(currentPage, pageSize, vo));
+        return ApiResponse.success(response);
     }
 
     @GetMapping("/count")

@@ -29,14 +29,21 @@
           </el-table-column>
           <el-table-column label="状态" width="100">
             <template #default="{ row }">
-              <el-tag :type="row.status === 'OVERDUE' || isOverdue(row.dueDate) ? 'danger' : 'primary'">
-                {{ row.status === 'OVERDUE' || isOverdue(row.dueDate) ? '已逾期' : '借阅中' }}
+              <el-tag :type="row.status === 'OVERDUE' || isOverdue(row.dueDate) ? 'danger' : row.status === 'RETURN_PENDING' ? 'warning' : 'primary'">
+                {{ row.status === 'OVERDUE' || isOverdue(row.dueDate) ? '已逾期' : row.status === 'RETURN_PENDING' ? '审核中' : '借阅中' }}
               </el-tag>
             </template>
           </el-table-column>
           <el-table-column label="操作">
             <template #default="{ row }">
-              <el-button size="small" type="success" @click="handleReturn(row)">归还申请</el-button>
+              <el-button 
+                size="small" 
+                type="success" 
+                @click="handleReturn(row)"
+                :disabled="row.status === 'RETURN_PENDING'"
+              >
+                {{ row.status === 'RETURN_PENDING' ? '审核中' : '归还申请' }}
+              </el-button>
             </template>
           </el-table-column>
         </el-table>

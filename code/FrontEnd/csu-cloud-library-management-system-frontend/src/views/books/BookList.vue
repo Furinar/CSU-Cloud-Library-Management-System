@@ -14,7 +14,7 @@
         <el-form-item>
           <el-button type="primary" @click="handleSearch">查询</el-button>
           <el-button @click="resetQuery">重置</el-button>
-          <el-button type="success" @click="goToAdd">新增图书</el-button>
+          <el-button type="success" @click="goToAdd" v-if="authStore.isAdmin">新增图书</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -37,7 +37,7 @@
               </el-tag>
               <span class="count">库存: {{ book.availableStock }}/{{ book.totalStock }}</span>
             </div>
-            <div class="actions" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px; display: flex; justify-content: flex-end;">
+            <div class="actions" v-if="authStore.isAdmin" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px; display: flex; justify-content: flex-end;">
               <el-button type="primary" link size="small" @click.stop="goToEdit(book.id)">编辑</el-button>
               <el-button type="danger" link size="small" @click.stop="handleDelete(book)">删除</el-button>
             </div>
@@ -59,9 +59,11 @@ import { useRouter, useRoute } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getBooks, resolveBooksTotal, deleteBook } from '@/api/book';
 import type { Book, BookQuery } from '@/types/book';
+import { useAuthStore } from '@/stores/auth';
 
 const router = useRouter();
 const route = useRoute();
+const authStore = useAuthStore();
 
 const loading = ref(false);
 const books = ref<Book[]>([]);
