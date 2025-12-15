@@ -1,0 +1,1560 @@
+openapi: 3.0.0
+info:
+  title: CSU Cloud Library Management System API
+  description: API documentation for the CSU Cloud Library Management System.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8081/v1
+    description: Local Development Server
+
+paths:
+  # Admin Book Controller
+  /admin/book:
+    post:
+      tags:
+        - Admin Book
+      summary: createBook
+      description: 管理员新增图书
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookCreateDTO"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseBookBriefVO"
+    delete:
+      tags:
+        - Admin Book
+      summary: deleteBooksById
+      description: 管理员批量删除图书
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BooksDeleteDTO"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoid"
+
+  /admin/book/{bookId}:
+    put:
+      tags:
+        - Admin Book
+      summary: updateBookById
+      description: 管理员更新图书信息
+      parameters:
+        - name: bookId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookUpdateDTO"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseBookDetailVO"
+
+  /admin/book/count:
+    get:
+      tags:
+        - Admin Book
+      summary: getAllBooksCount
+      description: 获取图书总数统计
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseString"
+
+  # Book Controller
+  /book:
+    get:
+      tags:
+        - Book
+      summary: getBooks
+      description: 分页获取图书列表 (支持搜索)
+      parameters:
+        - name: currentPage
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: title
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: author
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: isbn
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponsePageResponseBookBriefVO"
+    post:
+      tags:
+        - Book
+      summary: "[NEW] addBook"
+      description: 新增图书 (普通用户/管理员)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookCreateDTO"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseBookBriefVO"
+
+  /book/{bookId}:
+    get:
+      tags:
+        - Book
+      summary: getBookById
+      description: 获取图书详情
+      parameters:
+        - name: bookId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseBookDetailVO"
+    put:
+      tags:
+        - Book
+      summary: "[NEW] updateBook"
+      description: 更新图书信息
+      parameters:
+        - name: bookId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookUpdateDTO"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseBookDetailVO"
+    delete:
+      tags:
+        - Book
+      summary: "[NEW] deleteBook"
+      description: 删除单本图书
+      parameters:
+        - name: bookId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoid"
+
+  /book/get/top10:
+    get:
+      tags:
+        - Book
+      summary: getTop10Books
+      description: 获取热门图书 Top 10
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseListBookDetailVO"
+
+  /book/recommend:
+    get:
+      tags:
+        - Book
+      summary: "[NEW] getRecommendBooks"
+      description: 获取推荐图书
+      parameters:
+        - name: count
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 3
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseListBookBriefVO"
+
+  # User Controller
+  /user/login:
+    post:
+      tags:
+        - User
+      summary: login
+      description: 用户登录
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLoginDTO"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseLoginVO"
+
+  /user/register:
+    post:
+      tags:
+        - User
+      summary: register
+      description: 用户注册
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRegisterDTO"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseRegisterVO"
+
+  /user/info:
+    get:
+      tags:
+        - User
+      summary: info
+      description: 获取当前用户信息
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseUserVO"
+
+  /user/list:
+    get:
+      tags:
+        - User
+      summary: "[NEW] listUsers"
+      description: 分页获取用户列表
+      parameters:
+        - name: currentPage
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+            default: 1
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+            default: 10
+        - name: keyword
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponsePageResponseUserVO"
+
+  /user/status/{id}:
+    put:
+      tags:
+        - User
+      summary: "[NEW] updateUserStatus"
+      description: 更新用户状态
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserStatusDTO"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoid"
+
+  /user/password:
+    put:
+      tags:
+        - User
+      summary: "[NEW] updatePassword"
+      description: 修改密码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserPasswordDTO"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoid"
+
+  /user/profile:
+    put:
+      tags:
+        - User
+      summary: "[NEW] updateProfile"
+      description: 更新个人资料
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserProfileDTO"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoid"
+
+  /user/reset-password:
+    post:
+      tags:
+        - User
+      summary: "[NEW] resetPassword"
+      description: 重置密码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserResetPasswordDTO"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoid"
+
+  # Admin User Controller
+  /admin/user/count:
+    get:
+      tags:
+        - Admin User
+      summary: getAllUsersCount
+      description: 获取用户总数统计
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseString"
+
+  /admin/user/{userId}/status:
+    put:
+      tags:
+        - Admin User
+      summary: "[NEW] updateUserStatus"
+      description: 管理员更新用户状态
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserStatusDTO"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoid"
+
+  # Borrow Record Controller
+  /borrow:
+    post:
+      tags:
+        - Borrow Record
+      summary: borrowBookById
+      description: 借阅图书
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BorrowRequestDTO"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseBorrowRecordVO"
+
+  /borrow/return:
+    post:
+      tags:
+        - Borrow Record
+      summary: returnBookByBorrowId
+      description: 归还图书
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReturnRequestDTO"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseBorrowRecordVO"
+
+  /borrow/me:
+    get:
+      tags:
+        - Borrow Record
+      summary: getCurrentBorrowRecords
+      description: 获取当前借阅记录 (未还/逾期)
+      parameters:
+        - name: currentPage
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponsePageResponseBorrowRecordVO"
+
+  /borrow/history:
+    get:
+      tags:
+        - Borrow Record
+      summary: getHistoryBorrowRecords
+      description: 获取历史借阅记录 (已还)
+      parameters:
+        - name: currentPage
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponsePageResponseBorrowRecordVO"
+    delete:
+      tags:
+        - Borrow Record
+      summary: deleteHistoryRecords
+      description: 删除历史借阅记录
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HistoryRecordsDeleteDTO"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoid"
+
+  # Admin Borrow Record Controller
+  /admin/borrow/return/confirm:
+    post:
+      tags:
+        - Admin Borrow Record
+      summary: "[NEW] confirmReturn"
+      description: 管理员确认还书
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReturnRequestDTO"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseBorrowRecordVO"
+
+  /admin/borrow:
+    get:
+      tags:
+        - Admin Borrow Record
+      summary: getAllBorrowRecords
+      description: 管理员分页获取所有借阅记录
+      parameters:
+        - name: currentPage
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: bookTitle
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponsePageResponseBorrowRecordVO"
+
+  /admin/borrow/count:
+    get:
+      tags:
+        - Admin Borrow Record
+      summary: getAllRecordsCount
+      description: 获取借阅记录总数统计
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseString"
+
+  /admin/borrow/overdue-rate:
+    get:
+      tags:
+        - Admin Borrow Record
+      summary: getOverdueRate
+      description: 获取逾期率统计
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseString"
+
+  /admin/borrow/returned-rate:
+    get:
+      tags:
+        - Admin Borrow Record
+      summary: getReturnedRate
+      description: 获取归还率统计
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseString"
+
+  # Notification Controller
+  /notification/me:
+    get:
+      tags:
+        - Notification
+      summary: getNotifications
+      description: 获取我的通知列表
+      parameters:
+        - name: currentPage
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponsePageResponseNotificationVO"
+
+  /notification/unread-count:
+    get:
+      tags:
+        - Notification
+      summary: getUnreadCount
+      description: 获取未读通知数量
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseString"
+
+  /notification/read:
+    put:
+      tags:
+        - Notification
+      summary: readNotifications
+      description: 批量标记通知为已读
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReadNotificationsDTO"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoid"
+
+  # Admin Notification Controller
+  /admin/notification/list:
+    get:
+      tags:
+        - Admin Notification
+      summary: "[NEW] getAllNotifications"
+      description: 管理员获取所有通知
+      parameters:
+        - name: currentPage
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: keyword
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponsePageResponseNotificationVO"
+
+  /admin/notification/push-all:
+    post:
+      tags:
+        - Admin Notification
+      summary: pushNotification2All
+      description: 推送通知给所有用户
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationPushDTO"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoid"
+
+  /admin/notification/push/{userName}:
+    post:
+      tags:
+        - Admin Notification
+      summary: pushNotification2User
+      description: 推送通知给指定用户
+      parameters:
+        - name: userName
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationPushDTO"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoid"
+
+  # Review Controller
+  /review:
+    post:
+      tags:
+        - Review
+      summary: createReview
+      description: 发表评价
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviewCreateDTO"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseReviewVO"
+
+  /review/{reviewId}:
+    delete:
+      tags:
+        - Review
+      summary: deleteReview
+      description: 删除评价
+      parameters:
+        - name: reviewId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoid"
+
+  /review/{bookId}:
+    get:
+      tags:
+        - Review
+      summary: getReviewsByBookId
+      description: 获取指定图书的评价列表
+      parameters:
+        - name: bookId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: currentPage
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponsePageResponseReviewVO"
+
+  # Admin Review Controller
+  /admin/review/{reviewId}:
+    delete:
+      tags:
+        - Admin Review
+      summary: "[NEW] deleteAppointedReview"
+      description: 管理员删除指定评价
+      parameters:
+        - name: reviewId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoid"
+
+components:
+  schemas:
+    # DTOs
+    BookCreateDTO:
+      type: object
+      properties:
+        title:
+          type: string
+        author:
+          type: string
+        isbn:
+          type: string
+        publisher:
+          type: string
+        publishDate:
+          type: string
+          format: date
+        category:
+          type: string
+        description:
+          type: string
+        coverUrl:
+          type: string
+        totalStock:
+          type: integer
+
+    BookUpdateDTO:
+      type: object
+      properties:
+        title:
+          type: string
+        author:
+          type: string
+        isbn:
+          type: string
+        publisher:
+          type: string
+        publishDate:
+          type: string
+          format: date
+        category:
+          type: string
+        description:
+          type: string
+        coverUrl:
+          type: string
+        totalStock:
+          type: integer
+
+    BooksDeleteDTO:
+      type: object
+      properties:
+        bookIdList:
+          type: array
+          items:
+            type: string
+
+    BorrowRequestDTO:
+      type: object
+      properties:
+        bookId:
+          type: string
+        borrowTime:
+          type: integer
+          description: 1, 3, 7, 14, 30, 60, 90
+
+    HistoryRecordsDeleteDTO:
+      type: object
+      properties:
+        borrowRecordIdList:
+          type: array
+          items:
+            type: string
+
+    NotificationPushDTO:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        type:
+          type: string
+          description: COMMON, DUE_REMINDER, OVERDUE_NOTICE
+        status:
+          type: string
+          description: UNREAD, READ
+
+    ReadNotificationsDTO:
+      type: object
+      properties:
+        notificationIdList:
+          type: array
+          items:
+            type: string
+
+    ReturnRequestDTO:
+      type: object
+      properties:
+        borrowRecordId:
+          type: string
+
+    ReviewCreateDTO:
+      type: object
+      properties:
+        bookId:
+          type: string
+        rating:
+          type: number
+          format: double
+        comment:
+          type: string
+
+    UserLoginDTO:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    UserRegisterDTO:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+
+    UserStatusDTO:
+      type: object
+      properties:
+        status:
+          type: integer
+
+    UserPasswordDTO:
+      type: object
+      properties:
+        oldPassword:
+          type: string
+        newPassword:
+          type: string
+
+    UserProfileDTO:
+      type: object
+      properties:
+        email:
+          type: string
+
+    UserResetPasswordDTO:
+      type: object
+      properties:
+        email:
+          type: string
+        newPassword:
+          type: string
+
+    # VOs
+    BookBriefVO:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        publisher:
+          type: string
+        author:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+        publishDate:
+          type: string
+          format: date
+        coverUrl:
+          type: string
+        totalStock:
+          type: integer
+        availableStock:
+          type: integer
+
+    BookDetailVO:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        author:
+          type: string
+        isbn:
+          type: string
+        publisher:
+          type: string
+        publishDate:
+          type: string
+          format: date
+        category:
+          type: string
+        description:
+          type: string
+        coverUrl:
+          type: string
+        totalStock:
+          type: integer
+        availableStock:
+          type: integer
+        averageRating:
+          type: number
+          format: double
+
+    BorrowRecordVO:
+      type: object
+      properties:
+        id:
+          type: string
+        bookId:
+          type: string
+        bookTitle:
+          type: string
+        bookCoverUrl:
+          type: string
+        userId:
+          type: string
+        userName:
+          type: string
+        borrowDate:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date-time
+        returnDate:
+          type: string
+          format: date-time
+        status:
+          type: string
+
+    LoginVO:
+      type: object
+      properties:
+        token:
+          type: string
+        userInfo:
+          $ref: "#/components/schemas/UserVO"
+
+    NotificationVO:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+        gmtCreate:
+          type: string
+          format: date-time
+        userName:
+          type: string
+
+    RegisterVO:
+      type: object
+      properties:
+        id:
+          type: string
+        userName:
+          type: string
+        createTime:
+          type: string
+          format: date-time
+        email:
+          type: string
+        role:
+          type: string
+
+    ReviewVO:
+      type: object
+      properties:
+        id:
+          type: string
+        bookId:
+          type: string
+        userId:
+          type: string
+        username:
+          type: string
+        rating:
+          type: number
+          format: double
+        comment:
+          type: string
+        gmtCreate:
+          type: string
+          format: date-time
+
+    UserVO:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+        isDeleted:
+          type: integer
+
+    # Common Responses
+    ApiResponseVoid:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          type: object
+          nullable: true
+        timestamp:
+          type: integer
+          format: int64
+
+    ApiResponseString:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          type: string
+        timestamp:
+          type: integer
+          format: int64
+
+    ApiResponseBookBriefVO:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/BookBriefVO"
+        timestamp:
+          type: integer
+          format: int64
+
+    ApiResponseBookDetailVO:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/BookDetailVO"
+        timestamp:
+          type: integer
+          format: int64
+
+    ApiResponseListBookDetailVO:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/BookDetailVO"
+        timestamp:
+          type: integer
+          format: int64
+
+    ApiResponseListBookBriefVO:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/BookBriefVO"
+        timestamp:
+          type: integer
+          format: int64
+
+    ApiResponseLoginVO:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/LoginVO"
+        timestamp:
+          type: integer
+          format: int64
+
+    ApiResponseRegisterVO:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/RegisterVO"
+        timestamp:
+          type: integer
+          format: int64
+
+    ApiResponseUserVO:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/UserVO"
+        timestamp:
+          type: integer
+          format: int64
+
+    ApiResponseBorrowRecordVO:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/BorrowRecordVO"
+        timestamp:
+          type: integer
+          format: int64
+
+    ApiResponseReviewVO:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/ReviewVO"
+        timestamp:
+          type: integer
+          format: int64
+
+    # Page Responses
+    PageResponseBookBriefVO:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int64
+        pageSize:
+          type: integer
+          format: int64
+        totalPage:
+          type: integer
+          format: int64
+        totalCount:
+          type: integer
+          format: int64
+        recordsCount:
+          type: integer
+          format: int64
+        records:
+          type: array
+          items:
+            $ref: "#/components/schemas/BookBriefVO"
+
+    ApiResponsePageResponseBookBriefVO:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/PageResponseBookBriefVO"
+        timestamp:
+          type: integer
+          format: int64
+
+    PageResponseUserVO:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int64
+        pageSize:
+          type: integer
+          format: int64
+        totalPage:
+          type: integer
+          format: int64
+        totalCount:
+          type: integer
+          format: int64
+        recordsCount:
+          type: integer
+          format: int64
+        records:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserVO"
+
+    ApiResponsePageResponseUserVO:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/PageResponseUserVO"
+        timestamp:
+          type: integer
+          format: int64
+
+    PageResponseBorrowRecordVO:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int64
+        pageSize:
+          type: integer
+          format: int64
+        totalPage:
+          type: integer
+          format: int64
+        totalCount:
+          type: integer
+          format: int64
+        recordsCount:
+          type: integer
+          format: int64
+        records:
+          type: array
+          items:
+            $ref: "#/components/schemas/BorrowRecordVO"
+
+    ApiResponsePageResponseBorrowRecordVO:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/PageResponseBorrowRecordVO"
+        timestamp:
+          type: integer
+          format: int64
+
+    PageResponseNotificationVO:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int64
+        pageSize:
+          type: integer
+          format: int64
+        totalPage:
+          type: integer
+          format: int64
+        totalCount:
+          type: integer
+          format: int64
+        recordsCount:
+          type: integer
+          format: int64
+        records:
+          type: array
+          items:
+            $ref: "#/components/schemas/NotificationVO"
+
+    ApiResponsePageResponseNotificationVO:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/PageResponseNotificationVO"
+        timestamp:
+          type: integer
+          format: int64
+
+    PageResponseReviewVO:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int64
+        pageSize:
+          type: integer
+          format: int64
+        totalPage:
+          type: integer
+          format: int64
+        totalCount:
+          type: integer
+          format: int64
+        recordsCount:
+          type: integer
+          format: int64
+        records:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReviewVO"
+
+    ApiResponsePageResponseReviewVO:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        data:
+          $ref: "#/components/schemas/PageResponseReviewVO"
+        timestamp:
+          type: integer
+          format: int64
