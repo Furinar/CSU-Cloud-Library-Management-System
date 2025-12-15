@@ -1,12 +1,12 @@
 # 中南云图书管理系统 (CSU Cloud Library Management System)
 
-这是一个基于 Spring Boot 3 和 Vue 3 开发的前后端分离图书馆借阅管理系统。本项目为中南大学计科 Java 一班实训任务第一组作品。
+这是一个基于 **Spring Boot 3** 和 **Vue 3** 开发的前后端分离图书馆借阅管理系统。本项目为中南大学计科 Java 一班实训任务第一组作品。
 
-## 📚 项目简介
-
-本项目旨在提供一个高效、易用的图书馆管理解决方案，涵盖了从图书管理、借阅流程到用户权限控制的全方位功能。系统采用现代化的技术栈，界面友好，功能完善。
+系统旨在提供一个高效、易用的图书馆管理解决方案，涵盖了从图书管理、借阅流程到用户权限控制的全方位功能。界面友好，功能完善，适合作为学习全栈开发的参考项目。
 
 > 🔗 **远程仓库地址**: [https://github.com/Furinar/CSU-Cloud-Library-Management-System](https://github.com/Furinar/CSU-Cloud-Library-Management-System)
+
+---
 
 ## 🛠 技术栈
 
@@ -15,27 +15,112 @@
 - **核心框架**: Vue 3 + TypeScript
 - **构建工具**: Vite 5
 - **UI 组件库**: Element Plus
-- **路由管理**: Vue Router 4
 - **状态管理**: Pinia
+- **路由管理**: Vue Router 4
 - **HTTP 客户端**: Axios
-- **图表库**: ECharts
+- **数据可视化**: ECharts
 
 ### 后端 (Backend)
 
 - **核心框架**: Spring Boot 3.5.7
-- **ORM 框架**: MyBatis-Plus / MyBatis 3.5.7
+- **ORM 框架**: MyBatis-Plus / MyBatis
 - **安全框架**: Spring Security
-- **数据库**: MySQL / MariaDB
+- **数据库**: MySQL 8.0+ / MariaDB
 - **工具库**: Lombok, Hutool
 - **JDK 版本**: JDK 21
 
-### 部署与运维 (DevOps)
+### 部署与运维
 
 - **构建工具**: Maven 3
-- **接口测试**: Apifox
-- **版本控制**: Git
+- **包管理器**: npm / yarn / pnpm
 
-## ✨ 功能模块详解
+---
+
+## 🚀 快速开始 (Quick Start)
+
+按照以下步骤在本地运行项目。
+
+### 1. 环境准备
+
+确保你的开发环境已安装以下软件：
+
+- **Java**: JDK 21 或更高版本
+- **Node.js**: v20.19.0+ 或 v22.12.0+
+- **Database**: MySQL 8.0+ 或 MariaDB
+- **Maven**: 3.6+
+
+### 2. 数据库配置
+
+1.  登录你的 MySQL/MariaDB 数据库。
+2.  创建一个名为 `library_borrowing` 的数据库：
+    ```sql
+    CREATE DATABASE library_borrowing CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+    ```
+3.  **初始化表结构与数据**：
+    依次执行后端资源目录 `code/BackEnd/csu-cloud-library-management-system-backend/src/main/resources/sql/` 下的 SQL 文件：
+    1.  `init.sql` (必须先执行，用于创建表结构)
+    2.  `user.sql`, `book.sql`, `borrow_record.sql` 等 (可选，用于导入测试数据)
+
+### 3. 后端启动 (BackEnd)
+
+1.  进入后端项目目录：
+    ```bash
+    cd code/BackEnd/csu-cloud-library-management-system-backend
+    ```
+2.  修改数据库配置：
+    打开 `src/main/resources/application-local.properties` (或 `application.properties`)，更新你的数据库用户名和密码：
+    ```properties
+    spring.datasource.username=你的用户名 (例如: root)
+    spring.datasource.password=你的密码
+    ```
+3.  运行项目：
+    ```bash
+    mvn spring-boot:run
+    ```
+    或者使用 IntelliJ IDEA 打开该目录，等待 Maven 依赖下载完成后，运行主启动类。
+    后端服务默认启动在 `http://localhost:8081`。
+
+### 4. 前端启动 (FrontEnd)
+
+1.  进入前端项目目录：
+    ```bash
+    cd code/FrontEnd/csu-cloud-library-management-system-frontend
+    ```
+2.  安装依赖：
+    ```bash
+    npm install
+    ```
+3.  启动开发服务器：
+    ```bash
+    npm run dev
+    ```
+    前端服务通常启动在 `http://localhost:5173` (具体看控制台输出)。
+
+---
+
+## 📂 项目结构
+
+```
+CSU-Cloud-Library-Management-System/
+├── code/
+│   ├── BackEnd/          # 后端工程
+│   │   └── csu-cloud-library-management-system-backend/
+│   │       ├── src/
+│   │       │   ├── main/java/com/skyfirst/  # Java 源码
+│   │       │   └── main/resources/          # 配置文件与 SQL 脚本
+│   │       └── pom.xml
+│   └── FrontEnd/         # 前端工程
+│       └── csu-cloud-library-management-system-frontend/
+│           ├── src/
+│           │   ├── api/      # 接口请求定义
+│           │   ├── views/    # 页面组件
+│           │   └── stores/   # 状态管理
+│           └── package.json
+├── docs/                 # 项目文档
+└── README.md             # 项目说明
+```
+
+## ✨ 功能模块
 
 ```
 ├── 用户认证与权限模块
@@ -52,6 +137,7 @@
 │   ├── 新书推荐（最新上架TOP5展示）
 │   ├── 图书查询（条件查询、分页展示、检索）
 │   ├── 新增图书（管理员权限）
+│   ├── 删除图书（管理员权限）
 │   ├── 编辑图书（管理员权限，仅可借阅状态）
 │   ├── 图书编目与库存管理
 │   └── 图书基础配置（分类、状态等）
@@ -75,80 +161,10 @@
     └── 明细统计查询
 ```
 
-## 📂 目录结构
+## 🤝 贡献与反馈
 
-```
-code/
-├── library_borrowing_backend/     # 后端项目根目录
-│   └── library_borrowing_backend/ # Spring Boot 源码
-├── library_borrowing_frontend/    # 前端项目根目录
-│   └── csu-cloud-library-management-system-main/ # Vue 源码
-└── docs/                          # 项目文档
-```
+欢迎提交 Issue 或 Pull Request 来改进本项目。
 
-## 🚀 快速开始
+---
 
-### 1. 环境准备
-
-- **Java**: JDK 21
-- **Node.js**: v20.19.0 或更高版本
-- **Database**: MySQL 8.0+ 或 MariaDB
-- **Maven**: 3.x
-
-### 2. 数据库配置
-
-1.  创建数据库 `library_borrowing`。
-2.  执行初始化 SQL 脚本，脚本位于后端目录：
-    `code/library_borrowing_backend/library_borrowing_backend/src/main/resources/sql/init.sql`
-    (以及其他相关 sql 文件如 `book.sql`, `borrow_record.sql` 等，视 `init.sql` 是否包含完整结构而定)。
-3.  修改后端数据库连接配置：
-    打开(创建) `code/library_borrowing_backend/library_borrowing_backend/src/main/resources/application-local.properties`
-    ```properties
-    spring.datasource.url=jdbc:mysql://localhost:3306/library_borrowing?serverTimezone=UTC
-    spring.datasource.username=root  # 修改为你的数据库用户名
-    spring.datasource.password=your_password # 修改为你的数据库密码
-    ```
-
-### 3. 启动后端
-
-进入后端项目目录：
-
-```bash
-cd code/library_borrowing_backend/library_borrowing_backend
-```
-
-使用 Maven 运行：
-
-```bash
-mvn spring-boot:run
-```
-
-后端服务默认启动在端口 **8081**。
-
-### 4. 启动前端
-
-进入前端项目目录：
-
-```bash
-cd code/library_borrowing_frontend/csu-cloud-library-management-system-main
-```
-
-安装依赖：
-
-```bash
-npm install
-```
-
-启动开发服务器：
-
-```bash
-npm run dev
-```
-
-访问地址通常为 `http://localhost:5173`。
-
-## 📝 默认配置说明
-
-- **后端端口**: 8081
-- **数据库名**: library_borrowing
-- **JWT 密钥**: 在 `application-local.properties` 中配置。
+_Created by CSU Java Class 1 Group 1_
