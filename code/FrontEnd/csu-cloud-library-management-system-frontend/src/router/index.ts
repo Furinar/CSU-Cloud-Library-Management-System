@@ -52,6 +52,18 @@ const router = createRouter({
           meta: { title: '图书查询' }
         },
         {
+          path: 'books/add',
+          name: 'BookAdd',
+          component: () => import('@/views/books/BookForm.vue'),
+          meta: { title: '新增图书' }
+        },
+        {
+          path: 'books/edit/:id',
+          name: 'BookEdit',
+          component: () => import('@/views/books/BookForm.vue'),
+          meta: { title: '编辑图书' }
+        },
+        {
           path: 'books/recommend',
           name: 'BookRecommend',
           component: () => import('@/views/books/Recommend.vue'),

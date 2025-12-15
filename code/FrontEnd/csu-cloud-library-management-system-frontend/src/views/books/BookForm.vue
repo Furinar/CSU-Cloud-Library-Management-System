@@ -170,7 +170,7 @@ const handleSubmit = async () => {
           await createBook(payload);
           ElMessage.success('创建成功');
         }
-        router.push('/admin/books/list');
+        router.push('/books/search');
       } catch (error) {
         console.error(error);
       }

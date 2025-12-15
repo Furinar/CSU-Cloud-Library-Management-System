@@ -14,6 +14,7 @@
         <el-form-item>
           <el-button type="primary" @click="handleSearch">查询</el-button>
           <el-button @click="resetQuery">重置</el-button>
+          <el-button type="success" @click="goToAdd">新增图书</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -36,6 +37,10 @@
               </el-tag>
               <span class="count">库存: {{ book.availableStock }}/{{ book.totalStock }}</span>
             </div>
+            <div class="actions" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px; display: flex; justify-content: flex-end;">
+              <el-button type="primary" link size="small" @click.stop="goToEdit(book.id)">编辑</el-button>
+              <el-button type="danger" link size="small" @click.stop="handleDelete(book)">删除</el-button>
+            </div>
           </div>
         </div>
       </div>
@@ -51,7 +56,8 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { getBooks, resolveBooksTotal } from '@/api/book';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { getBooks, resolveBooksTotal, deleteBook } from '@/api/book';
 import type { Book, BookQuery } from '@/types/book';
 
 const router = useRouter();
@@ -98,6 +104,38 @@ const resetQuery = () => {
 
 const goToDetail = (id: string) => {
   router.push(`/books/detail/${id}`);
+};
+
+const goToAdd = () => {
+  router.push('/books/add');
+};
+
+const goToEdit = (id: string) => {
+  router.push(`/books/edit/${id}`);
+};
+
+const handleDelete = (book: Book) => {
+  ElMessageBox.confirm(
+    `确定要删除图书 "${book.title}" 吗？`,
+    '警告',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  )
+    .then(async () => {
+      try {
+        await deleteBook(book.id);
+        ElMessage.success('删除成功');
+        fetchBooks();
+      } catch (error) {
+        console.error(error);
+      }
+    })
+    .catch(() => {
+      // cancel
+    });
 };
 
 onMounted(() => {
