@@ -149,7 +149,7 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements IB
     }
 
     @Override
-    public List<BookDetailVO> getTop10Books() {
+    public List<BookDetailVO>       getTop10Books() {
         List<Book> books = query().eq("is_deleted", 0).list();
         if (books == null || books.isEmpty()) {
             return Collections.emptyList();

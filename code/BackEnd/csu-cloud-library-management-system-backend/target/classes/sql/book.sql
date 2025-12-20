@@ -186,7 +186,6 @@ INSERT INTO `book` (
  (172, '渗透测试实战', '蔡晶晶', '9787115599680', '人民邮电出版社', '2024-09-01', '计算机/安全', 'Web渗透、主机渗透、社会工程学实战。', 'https://img9.doubanio.com/view/subject/s/public/s4072221.jpg', 20, 12, 0),
  (173, '代码审计实战', '王清', '9787115599673', '人民邮电出版社', '2024-10-01', '计算机/安全', 'PHP、Java代码审计，漏洞发现与修复实战。', 'https://img9.doubanio.com/view/subject/s/public/s4072222.jpg', 22, 15, 0);
 
-
 -- ========== 1. 文学/科幻/悬疑类（category=art） ==========
 UPDATE `book` SET `cover_url` = 'https://picsum.photos/800/1000?category=art&img=1' WHERE `id` = 1; -- 三体（科幻）
 UPDATE `book` SET `cover_url` = 'https://picsum.photos/800/1000?category=art&img=2' WHERE `id` = 2; -- 活着（文学）

@@ -72,8 +72,7 @@
                                   `is_deleted` TINYINT(1) DEFAULT 0 COMMENT '逻辑删除 0:未删除 1:已删除 (管理员审核)',
                                   `gmt_create` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
                                   `gmt_modified` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
-                                  PRIMARY KEY (`id`),
-                                  UNIQUE KEY `uk_user_book` (`user_id`, `book_id`) COMMENT '同一用户对同一本书只能评价一次'
+                                  PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='评价表';
 
 
